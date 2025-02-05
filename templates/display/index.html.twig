@@ -55,7 +55,14 @@
             .view-button:hover {
                 background-color: #444444;
             }
+
+            .tournament-date {
+                font-size: 18px; /* Taille réduite */
+                color: #888888; /* Couleur grisée */
+                margin-top: 5px; /* Un petit espace entre le titre et la date */
+            }
         </style>
+
 
         <div class="example-wrapper">
             <h1>Liste des Tournois 🏆</h1>
@@ -64,7 +71,8 @@
                 {% for tournament in tournaments %}
                     <div class="tournament-wrapper">
                         <h2 class="tournament-title">{{ tournament.name }}</h2>
-                        <a class="view-button">View</a>
+                        <h4 class="tournament-date">{{ tournament.getDateStart()|date('d/m/Y') }}</h4>
+                        <a href="{{ path('app_tournament_view', { 'id': tournament.id }) }}" class="view-button">view</a>
                     </div>
                 {% else %}
                     <div>Aucun tournoi disponible.</div>

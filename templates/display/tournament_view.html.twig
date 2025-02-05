@@ -1,0 +1,55 @@
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .tournament-details {
+        padding: 20px;
+        margin: 20px; 
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .btn-primary {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+    }
+
+    .btn-primary:hover {
+        background-color: #444444;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="tournament-details">
+        <h1>{{ tournament.name }}</h1>
+
+        <p><strong>Name:</strong> {{ tournament.name }}</p>
+        <p><strong>Date:</strong> {{ tournament.getDateStart() | date('Y-m-d') }}</p>
+        <p><strong>Max Teams:</strong> {{ tournament.getNbMaxTeam() }}</p>
+
+        
+        <a href="{{ path('app_display') }}" class="btn btn-primary">Back to Tournaments List</a>
+    </div>
+{% endblock %}
