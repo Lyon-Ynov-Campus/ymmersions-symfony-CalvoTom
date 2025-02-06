@@ -44,6 +44,26 @@ class USER implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    /**
+     * @var string|null
+     */
+    private ?string $plainPassword = null;
+
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        $this->password = null;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
