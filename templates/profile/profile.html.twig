@@ -1,0 +1,61 @@
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .profile-container {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 500px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .btn-secondary {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        text-align: center;
+        margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #444444;
+    }
+</style>
+{% endblock %}
+{% block body %}
+{% include 'header.html.twig' %}
+
+    <div class="profile-container">
+        <h1>Bienvenue, {{ user.name }}!</h1>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Rôle:</strong> {{ user.roles|join(', ') }}</p>
+        <p><strong>Date de création:</strong> {{ user.getDateBirth|date('d/m/Y') }}</p>
+        <a href="{{ path('app_profile_edit') }}" class="btn-secondary">Modifier</a>
+    </div>
+{% endblock %}
