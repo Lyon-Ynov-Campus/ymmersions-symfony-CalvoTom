@@ -21,7 +21,7 @@ class UserFixture extends Fixture
         $user = new USER();
         $user->setName('admin');
         $user->setEmail('admin@gmail.com');
-        $user->setRoles(["ROLE_ADMIN"]);
+        $user->setRoles(["ROLE_ADMIN", "ROLE_USER"]);
         $user->setDateBirth(new \DateTime('2025-02-06'));
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, 'admin');
