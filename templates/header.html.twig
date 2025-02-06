@@ -11,6 +11,7 @@
             <ul style="list-style: none; padding: 0; margin: 0; display: flex; gap: 20px;">
                 {% if is_granted('ROLE_ADMIN') %}
                     <li><a href="{{ path('admin') }}" style="color: #ffffff; text-decoration: none;">Dashboard</a></li>
+                    <li><a href="{{ path('app_tournament_create') }}" style="color: #ffffff; text-decoration: none;">Tournament</a></li>
                 {% endif %}
                 {% if not is_granted('ROLE_USER') %}
                     <li><a href="{{ path('app_register') }}" style="color: #ffffff; text-decoration: none;">Register</a></li>

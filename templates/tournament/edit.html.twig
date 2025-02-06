@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Éditer le Tournoi : {{ tournament.name }}</h1>
+
+    {# Formulaire d'édition du tournoi #}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">Mettre à jour le tournoi</button>
+    {{ form_end(form) }}
+
+    <h2>Matchs du Tournoi</h2>
+    {# Affichage des matchs entre plusieurs équipes, répartis par phases #}
+    {% for match in matches %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Équipe 1</th>
+                    <th>Score Équipe 1</th>
+                    <th>Score Équipe 2</th>
+                    <th>Équipe 2</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+                    <tr>
+                        <td>{{ match.idTeam1.getName() }}</td>
+                        <td>{{ match.getScoreTeam1() }}</td>
+                        <td>{{ match.getScoreTeam2() }}</td>
+                        <td>{{ match.idTeam2.getName() }}</td>
+                    </tr>
+            </tbody>
+        </table>
+    {% endfor %}
+
+    {% if not isInProgress %}
+        <h2>Équipes Inscrites</h2>
+        {# Affichage des équipes inscrites dans une liste #}
+        <ul>
+            {% for team in teams %}
+                <li>
+                    {{ team.name }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
