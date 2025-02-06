@@ -1,32 +1,179 @@
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .tournament-details {
+        padding: 20px;
+        margin: 20px; 
+        background-color: #f9f9f9; /* Fond léger pour le conteneur */
+        border: 1px solid #ddd; /* Bordure pour le conteneur */
+        border-radius: 8px; /* Coins arrondis */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour le conteneur */
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    h3 {
+        font-size: 24px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #000; /* Ligne sous le titre de phase */
+        padding-bottom: 5px; /* Espace sous le titre */
+    }
+
+    table {
+        width: 100%; /* Prend toute la largeur du conteneur */
+        border-collapse: collapse; /* Supprime les espaces entre les cellules */
+        margin-top: 20px; /* Espace au-dessus du tableau */
+    }
+
+    th, td {
+        padding: 10px; /* Espace à l'intérieur des cellules */
+        text-align: center; /* Centre le texte */
+        border: 1px solid #ddd; /* Bordure pour les cellules */
+    }
+
+    th {
+        background-color: #000000; /* Fond noir pour les en-têtes */
+        color: #ffffff; /* Texte blanc pour les en-têtes */
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2; /* Fond gris clair pour les lignes paires */
+    }
+
+    tr:hover {
+        background-color: #e0e0e0; /* Fond gris clair au survol */
+    }
+
+    .btn-primary {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+    }
+
+    .btn-primary:hover {
+        background-color: #444444;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-    {% include 'header.html.twig' %}
+{% include 'header.html.twig' %}
     
     <div class="tournament-details">
         <h1>{{ tournament.name }}</h1>
         <p><strong>Date:</strong> {{ tournament.getDateStart() | date('Y-m-d') }}</p>
         <p><strong>Max Teams:</strong> {{ tournament.getNbMaxTeam() }}</p>
 
-        <h3>Huitième de Finale</h3>
-        {% for match in phases['Huitième de finale'] %}
-           {{ match.idTeam1.getName() }} ({{ match.getScoreTeam1() }}) - ({{ match.getScoreTeam2() }}) {{ match.idTeam2.getName() }}
-        {% endfor %}
+        {% if phases['Huitième de finale'] is not empty %}
+            <h3>Huitième de finale</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team 1</th>
+                        <th>Score</th>
+                        <th>Team 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in phases['Huitième de finale'] %}
+                        <tr>
+                            <td>{{ match.idTeam1.getName() }}</td>
+                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                            <td>{{ match.idTeam2.getName() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
-        <h3>Quart de Finale</h3>
-        {% for match in phases['Quart de finale'] %}
-            {{ match.idTeam1.getName() }} ({{ match.getScoreTeam1() }}) - ({{ match.getScoreTeam2() }}) {{ match.idTeam2.getName() }}
-        {% endfor %}
+        {% if phases['Quart de finale'] is not empty %}
+            <h3>Quart de finale</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team 1</th>
+                        <th>Score</th>
+                        <th>Team 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in phases['Quart de finale'] %}
+                        <tr>
+                            <td>{{ match.idTeam1.getName() }}</td>
+                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                            <td>{{ match.idTeam2.getName() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
-        <h3>Demi-Finale</h3>
-        {% for match in phases['Demi-final'] %}
-            {{ match.idTeam1.getName() }} ({{ match.getScoreTeam1() }}) - ({{ match.getScoreTeam2() }}) {{ match.idTeam2.getName() }}
-        {% endfor %}
+        {% if phases['Demi-final'] is not empty %}
+            <h3>Demi-Finale</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team 1</th>
+                        <th>Score</th>
+                        <th>Team 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in phases['Demi-final'] %}
+                        <tr>
+                            <td>{{ match.idTeam1.getName() }}</td>
+                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                            <td>{{ match.idTeam2.getName() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
-        <h3>Finale</h3>
-        {% for match in phases['Final'] %}
-            {{ match.idTeam1.getName() }} ({{ match.getScoreTeam1() }}) - ({{ match.getScoreTeam2() }}) {{ match.idTeam2.getName() }}
-        {% endfor %}
+        {% if phases['Final'] is not empty %}
+            <h3>Finale</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team 1</th>
+                        <th>Score</th>
+                        <th>Team 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in phases['Final'] %}
+                        <tr>
+                            <td>{{ match.idTeam1.getName() }}</td>
+                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                            <td>{{ match.idTeam2.getName() }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
         <a href="{{ path('app_display') }}" class="btn btn-primary">Retour aux Tournois</a>
     </div>
 {% endblock %}
-

@@ -29,14 +29,14 @@ final class DisplayController extends AbstractController
         if (!$tournament) {
             throw $this->createNotFoundException('Tournament not found');
         }
-
+    
         // Récupérer tous les matchs du tournoi
         $matches = $matchsRepository->findBy(['id_tournament' => $id]);
-
+    
         // Déterminer le nombre d'équipes max pour calculer les phases
         $nbTeams = $tournament->getNbMaxTeam();
         $totalRounds = log($nbTeams, 2); // Ex: 16 équipes → 4 tours (8e, ¼, ½, finale)
-
+    
         // Organiser les matchs par phase
         $phases = [
             "Final" => [],
@@ -44,7 +44,7 @@ final class DisplayController extends AbstractController
             "Quart de finale" => [],
             "Huitième de finale" => [],
         ];
-
+    
         // Nombre de matchs restants pour chaque phase
         $remainingMatches = [
             "Huitième de finale" => $nbTeams / 2,
@@ -52,7 +52,25 @@ final class DisplayController extends AbstractController
             "Demi-final" => $nbTeams / 8,
             "Final" => 1
         ];
-
+    
+        // Logique pour gérer les phases vides en fonction du nombre d'équipes
+        if ($nbTeams == 8) {
+            // Si nous avons 8 équipes, commencer à partir des quarts de finale
+            $remainingMatches["Huitième de finale"] = 0; // La phase des huitièmes est vide
+            $remainingMatches["Quart de finale"] = 4; // 4 matchs en quarts de finale
+        } elseif ($nbTeams == 4) {
+            // Si nous avons 4 équipes, commencer directement à partir des demi-finales
+            $remainingMatches["Huitième de finale"] = 0; // La phase des huitièmes est vide
+            $remainingMatches["Quart de finale"] = 0; // La phase des quarts est vide
+            $remainingMatches["Demi-final"] = 2; // 2 matchs en demi-finales
+        } elseif ($nbTeams == 2) {
+            // Si nous avons 2 équipes, commencer directement à la finale
+            $remainingMatches["Huitième de finale"] = 0; // La phase des huitièmes est vide
+            $remainingMatches["Quart de finale"] = 0; // La phase des quarts est vide
+            $remainingMatches["Demi-final"] = 0; // La phase des demi-finales est vide
+            $remainingMatches["Final"] = 1; // 1 match en finale
+        }
+    
         // Répartir les matchs dans les phases
         foreach ($matches as $match) {
             // Si on est à la phase des huitièmes de finale
@@ -76,10 +94,10 @@ final class DisplayController extends AbstractController
                 $remainingMatches["Final"]--;
             }
         }
-
+    
         return $this->render('display/tournament_view.html.twig', [
             'tournament' => $tournament,
             'phases' => $phases
         ]);
-    }
+    }    
 }
