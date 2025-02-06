@@ -1,46 +1,76 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .tournament-edit-container {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 500px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    input, select {
+        width: calc(100% - 20px); /* Réduit la largeur pour compenser le padding */
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        display: block; /* Assure que les éléments prennent toute la largeur */
+        margin-left: auto; /* Centre horizontalement */
+        margin-right: auto; /* Centre horizontalement */
+    }
+
+    button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        width: 100%; /* Prend toute la largeur */
+    }
+
+    button:hover {
+        background-color: #444444;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-    <h1>Éditer le Tournoi : {{ tournament.name }}</h1>
+{% include 'header.html.twig' %}
+    <div class="tournament-edit-container">
+        <h1>Editer le Tournoi</h1>
 
-    {# Formulaire d'édition du tournoi #}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn">Mettre à jour le tournoi</button>
-    {{ form_end(form) }}
-
-    <h2>Matchs du Tournoi</h2>
-    {# Affichage des matchs entre plusieurs équipes, répartis par phases #}
-    {% for match in matches %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Équipe 1</th>
-                    <th>Score Équipe 1</th>
-                    <th>Score Équipe 2</th>
-                    <th>Équipe 2</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-                    <tr>
-                        <td>{{ match.idTeam1.getName() }}</td>
-                        <td>{{ match.getScoreTeam1() }}</td>
-                        <td>{{ match.getScoreTeam2() }}</td>
-                        <td>{{ match.idTeam2.getName() }}</td>
-                    </tr>
-            </tbody>
-        </table>
-    {% endfor %}
-
-    {% if not isInProgress %}
-        <h2>Équipes Inscrites</h2>
-        {# Affichage des équipes inscrites dans une liste #}
-        <ul>
-            {% for team in teams %}
-                <li>
-                    {{ team.name }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+        {# Formulaire d'édition du tournoi #}
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn">Mettre à jour le tournoi</button>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

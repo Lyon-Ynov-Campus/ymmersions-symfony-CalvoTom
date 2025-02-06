@@ -43,9 +43,6 @@ class TournamentController extends AbstractController
         int $id,
         Request $request,
         TOURNAMENTRepository $tournamentRepository,
-        MATCHSRepository $matchsRepository,
-        TEAMRepository $teamRepository,
-        REGISTERRepository $registerRepository,
         EntityManagerInterface $entityManager
     ): Response {
         $tournament = $tournamentRepository->find($id);
@@ -62,22 +59,12 @@ class TournamentController extends AbstractController
             return $this->redirectToRoute('app_tournament_edit', ['id' => $tournament->getId()]);
         }
 
-        $matches = $matchsRepository->findBy(['id_tournament' => $tournament]);
-
-        $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
-        $teams = [];
-        foreach ($registers as $register) {
-            $teams[] = $register->getIdTeam();
-        }
-
         $currentDate = new \DateTime();
         $isInProgress = $currentDate >= $tournament->getDateStart();
 
         return $this->render('tournament/edit.html.twig', [
             'form' => $form->createView(),
             'tournament' => $tournament,
-            'matches' => $matches,
-            'teams' => $teams,
             'isInProgress' => $isInProgress,
         ]);
     }
