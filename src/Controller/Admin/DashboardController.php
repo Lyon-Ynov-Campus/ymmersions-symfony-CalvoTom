@@ -7,47 +7,39 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
+use App\Controller\Admin\USERCrudController;
+use App\Entity\USER;
+use App\Entity\MATCHS;
+use App\Entity\TOURNAMENT;
+use App\Entity\REGISTER;
+use App\Entity\TEAM;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 
 class DashboardController extends AbstractDashboardController
 {
     #[Route(path: '/admin', name: 'admin')]
-    //#[IsGranted(attribute: 'ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')] 
     public function index(): Response
     {
-        return parent::index();
-
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // 1.1) If you have enabled the "pretty URLs" feature:
-        // return $this->redirectToRoute('admin_user_index');
-        //
-        // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
-        // $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        // return $this->redirect($adminUrlGenerator->setController(OneOfYourCrudController::class)->generateUrl());
-
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
-
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
+        return $this->redirect($adminUrlGenerator->setController(USERCrudController::class)->generateUrl());
     }
+
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('LolTournament');
+            ->setTitle('MVP');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+        yield MenuItem::linkToCrud('USER', 'fas fa-list', USER::class);
+        yield MenuItem::linkToCrud('TEAM', 'fas fa-list', TEAM::class);
+        yield MenuItem::linkToCrud('MATCHS', 'fas fa-list', MATCHS::class);
+        yield MenuItem::linkToCrud('TOURNAMENT', 'fas fa-list', TOURNAMENT::class);
+        yield MenuItem::linkToCrud('REGISTER', 'fas fa-list', REGISTER::class);
     }
 }
