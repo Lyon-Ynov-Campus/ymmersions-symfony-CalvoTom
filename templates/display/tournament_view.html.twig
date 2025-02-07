@@ -86,92 +86,113 @@
         <p><strong>Date:</strong> {{ tournament.getDateStart() | date('Y-m-d') }}</p>
         <p><strong>Max Teams:</strong> {{ tournament.getNbMaxTeam() }}</p>
 
-        {% if phases['Huitième de finale'] is not empty %}
-            <h3>Huitième de finale</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team 1</th>
-                        <th>Score</th>
-                        <th>Team 2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for match in phases['Huitième de finale'] %}
-                        <tr>
-                            <td>{{ match.idTeam1.getName() }}</td>
-                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
-                            <td>{{ match.idTeam2.getName() }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        {# Vérifier si la date du tournoi est dépassée pour afficher les matchs #}
+        {% set currentDate = "now"|date('Y-m-d') %}
+        {% set tournamentDate = tournament.getDateEndRegister()|date('Y-m-d') %}
 
-        {% if phases['Quart de finale'] is not empty %}
-            <h3>Quart de finale</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team 1</th>
-                        <th>Score</th>
-                        <th>Team 2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for match in phases['Quart de finale'] %}
-                        <tr>
-                            <td>{{ match.idTeam1.getName() }}</td>
-                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
-                            <td>{{ match.idTeam2.getName() }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        {% if currentDate >= tournamentDate %}
+            {# Le tournoi a commencé, afficher les matchs #}
 
-        {% if phases['Demi-final'] is not empty %}
-            <h3>Demi-Finale</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team 1</th>
-                        <th>Score</th>
-                        <th>Team 2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for match in phases['Demi-final'] %}
+            {% if phases['Huitième de finale'] is not empty %}
+                <h3>Huitième de finale</h3>
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ match.idTeam1.getName() }}</td>
-                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
-                            <td>{{ match.idTeam2.getName() }}</td>
+                            <th>Team 1</th>
+                            <th>Score</th>
+                            <th>Team 2</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% for match in phases['Huitième de finale'] %}
+                            <tr>
+                                <td>{{ match.idTeam1.getName() }}</td>
+                                <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                                <td>{{ match.idTeam2.getName() }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
 
-        {% if phases['Final'] is not empty %}
-            <h3>Finale</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team 1</th>
-                        <th>Score</th>
-                        <th>Team 2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for match in phases['Final'] %}
+            {% if phases['Quart de finale'] is not empty %}
+                <h3>Quart de finale</h3>
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ match.idTeam1.getName() }}</td>
-                            <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
-                            <td>{{ match.idTeam2.getName() }}</td>
+                            <th>Team 1</th>
+                            <th>Score</th>
+                            <th>Team 2</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in phases['Quart de finale'] %}
+                            <tr>
+                                <td>{{ match.idTeam1.getName() }}</td>
+                                <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                                <td>{{ match.idTeam2.getName() }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if phases['Demi-final'] is not empty %}
+                <h3>Demi-Finale</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team 1</th>
+                            <th>Score</th>
+                            <th>Team 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in phases['Demi-final'] %}
+                            <tr>
+                                <td>{{ match.idTeam1.getName() }}</td>
+                                <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                                <td>{{ match.idTeam2.getName() }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if phases['Final'] is not empty %}
+                <h3>Finale</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team 1</th>
+                            <th>Score</th>
+                            <th>Team 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in phases['Final'] %}
+                            <tr>
+                                <td>{{ match.idTeam1.getName() }}</td>
+                                <td>{{ match.getScoreTeam1() }} - {{ match.getScoreTeam2() }}</td>
+                                <td>{{ match.idTeam2.getName() }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% else %}
+            <h3>Équipes inscrites</h3>
+            {% if teams is not empty %}
+                <ul>
+                    {% for team in teams %}
+                        <li>{{ team.getName() }}</li>
                     {% endfor %}
-                </tbody>
-            </table>
+                </ul>
+            {% else %}
+                <p>Aucune équipe inscrite pour le moment.</p>
+            {% endif %}
+            {# Le tournoi n'a pas encore commencé, afficher le bouton Register #}
+            <a href="{{ path('app_tournament_register', {id: tournament.id}) }}" class="btn btn-primary">S'inscrire au tournoi</a>
         {% endif %}
 
         <a href="{{ path('app_display') }}" class="btn btn-primary">Retour aux Tournois</a>

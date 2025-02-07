@@ -1,0 +1,84 @@
+{# templates/tournament/register.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .tournament-register-container {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 500px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    input, select {
+        width: calc(100% - 20px); /* Réduit la largeur pour compenser le padding */
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        display: block; /* Assure que les éléments prennent toute la largeur */
+        margin-left: auto; /* Centre horizontalement */
+        margin-right: auto; /* Centre horizontalement */
+    }
+
+    button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        width: 100%; /* Prend toute la largeur */
+    }
+
+    button:hover {
+        background-color: #444444;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'header.html.twig' %}
+    <div class="tournament-register-container">
+        <h1>Inscription au Tournoi : {{ tournament.name }}</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn">S'inscrire</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
