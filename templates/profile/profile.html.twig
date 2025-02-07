@@ -54,8 +54,7 @@
     <div class="profile-container">
         <h1>Bienvenue, {{ user.name }}!</h1>
         <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Rôle:</strong> {{ user.roles|join(', ') }}</p>
-        <p><strong>Date de création:</strong> {{ user.getDateBirth|date('d/m/Y') }}</p>
+        <p><strong>Date de naissance :</strong> {{ user.getDateBirth|date('d/m/Y') }}</p>
         <a href="{{ path('app_profile_edit') }}" class="btn-secondary">Modifier</a>
         {% if app.user %}
             <a href="{{ path('app_logout') }}" class="btn-secondary">Logout</a>

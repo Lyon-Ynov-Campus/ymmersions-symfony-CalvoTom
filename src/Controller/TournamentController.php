@@ -73,72 +73,72 @@ class TournamentController extends AbstractController
     }
 
     #[Route('/tournament/{id}/register', name: 'app_tournament_register')]
-public function register(
-    int $id,
-    Request $request,
-    TOURNAMENTRepository $tournamentRepository,
-    TEAMRepository $teamRepository,
-    REGISTERRepository $registerRepository,
-    EntityManagerInterface $entityManager
-): Response {
-    $tournament = $tournamentRepository->find($id);
-    if (!$tournament) {
-        throw $this->createNotFoundException('Tournoi non trouvé');
-    }
-
-    $currentDate = new \DateTime();
-    if ($currentDate > $tournament->getDateEndRegister()) {
-        $this->addFlash('error', 'La période d\'inscription est terminée.');
-        return $this->redirectToRoute('app_profile');
-    }
-
-    // Récupération des équipes déjà inscrites au tournoi
-    $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
-    $teams = [];
-    foreach ($registers as $register) {
-        $teams[] = $register->getIdTeam();
-    }
-
-    $newTeam = new Team();
-    $form = $this->createForm(TournamentRegistrationType::class, null, [
-        'teams' => $teams,
-    ]);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $team = $form->get('team')->getData();
-        if ($team) {
-            $newTeam = $team;
-        } else {
-            $newTeam->setName($form->get('new_team_name')->getData());
+    public function register(
+        int $id,
+        Request $request,
+        TOURNAMENTRepository $tournamentRepository,
+        TEAMRepository $teamRepository,
+        REGISTERRepository $registerRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $tournament = $tournamentRepository->find($id);
+        if (!$tournament) {
+            throw $this->createNotFoundException('Tournoi non trouvé');
         }
 
-        // Vérifier si l'équipe a déjà atteint le nombre maximum de joueurs
-        $teamRegistrations = $registerRepository->findBy(['id_team' => $newTeam]);
-        $maxPlayersPerTeam = $tournament->getNbMaxByTeam();
-
-        if (count($teamRegistrations) >= $maxPlayersPerTeam) {
-            $this->addFlash('error', 'Cette équipe a déjà atteint le nombre maximum de joueurs.');
-            return $this->redirectToRoute('app_tournament_register', ['id' => $tournament->getId()]);
+        $currentDate = new \DateTime();
+        if ($currentDate > $tournament->getDateEndRegister()) {
+            $this->addFlash('error', 'La période d\'inscription est terminée.');
+            return $this->redirectToRoute('app_profile');
         }
 
-        $entityManager->persist($newTeam);
+        // Récupération des équipes déjà inscrites au tournoi
+        $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
+        $teams = [];
+        foreach ($registers as $register) {
+            $teams[] = $register->getIdTeam();
+        }
 
-        $register = new REGISTER();
-        $register->setIdUser($this->getUser());
-        $register->setIdTeam($newTeam);
-        $register->setIdTournament($tournament);
-        $entityManager->persist($register);
-        $entityManager->flush();
+        $newTeam = new Team();
+        $form = $this->createForm(TournamentRegistrationType::class, null, [
+            'teams' => $teams,
+        ]);
+        $form->handleRequest($request);
 
-        $this->addFlash('success', 'Inscription réussie.');
-        return $this->redirectToRoute('app_display');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $team = $form->get('team')->getData();
+            if ($team) {
+                $newTeam = $team;
+            } else {
+                $newTeam->setName($form->get('new_team_name')->getData());
+            }
+
+            // Vérifier si l'équipe a déjà atteint le nombre maximum de joueurs
+            $teamRegistrations = $registerRepository->findBy(['id_team' => $newTeam]);
+            $maxPlayersPerTeam = $tournament->getNbMaxByTeam();
+
+            if (count($teamRegistrations) >= $maxPlayersPerTeam) {
+                $this->addFlash('error', 'Cette équipe a déjà atteint le nombre maximum de joueurs.');
+                return $this->redirectToRoute('app_tournament_register', ['id' => $tournament->getId()]);
+            }
+
+            $entityManager->persist($newTeam);
+
+            $register = new REGISTER();
+            $register->setIdUser($this->getUser());
+            $register->setIdTeam($newTeam);
+            $register->setIdTournament($tournament);
+            $entityManager->persist($register);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Inscription réussie.');
+            return $this->redirectToRoute('app_display');
+        }
+
+        return $this->render('tournament/register.html.twig', [
+            'form' => $form->createView(),
+            'tournament' => $tournament,
+        ]);
     }
-
-    return $this->render('tournament/register.html.twig', [
-        'form' => $form->createView(),
-        'tournament' => $tournament,
-    ]);
-}
 
 }

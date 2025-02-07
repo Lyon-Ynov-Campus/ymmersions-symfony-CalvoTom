@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .tournament-list {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .tournament-item {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        background-color: #ffffff; /* Fond blanc pour chaque tournoi */
+        transition: box-shadow 0.3s; /* Transition pour l'effet de survol */
+    }
+
+    .tournament-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Ombre au survol */
+    }
+
+    .no-tournament {
+        text-align: center;
+        font-size: 16px;
+        color: #777; /* Couleur grise pour le message */
+    }
+
+    .team-button, .view-button {
+        display: inline-block;
+        margin-top: 10px;
+        margin-right: 10px; /* Espace entre les boutons */
+        background-color: #000000;
+        color: #ffffff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .team-button:hover, .view-button:hover {
+        background-color: #444444; /* Couleur au survol */
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'header.html.twig' %}
+
+<div class="tournament-list">
+    <h1>Mes Tournois 🏆</h1>
+
+    {% if registrations is empty %}
+        <p class="no-tournament">Vous n'êtes inscrit à aucun tournoi.</p>
+    {% else %}
+        {% for registration in registrations %}
+            <div class="tournament-item">
+                <strong>Tournoi :</strong> {{ registration.idTournament.name }} <br>
+                <a href="{{ path('app_user_tournaments_teams', { id: registration.idTournament.id }) }}" class="team-button">Team</a>
+                <a href="{{ path('app_tournament_view', { id: registration.idTournament.id }) }}" class="view-button">View</a>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}

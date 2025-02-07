@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .team-container {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    h3 {
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .player-list {
+        list-style-type: none; /* Supprime les puces de la liste */
+        padding: 0; /* Supprime le padding par défaut */
+    }
+
+    .player-list li {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        background-color: #ffffff; /* Fond blanc pour chaque joueur */
+        transition: box-shadow 0.3s; /* Transition pour l'effet de survol */
+    }
+
+    .player-list li:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Ombre au survol */
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #000000;
+        color: #ffffff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .back-button:hover {
+        background-color: #444444; /* Couleur au survol */
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'header.html.twig' %}
+
+<div class="team-container">
+    <h1>{{ tournament.name }}</h1>
+    
+    <h2>{{ team.name }}</h2>
+    
+    <h3>Joueurs :</h3>
+    <ul class="player-list">
+        {% for player in players %}
+            <li>{{ player.name }}</li>
+        {% else %}
+            <li>Aucun joueur trouvé.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_user_tournaments') }}" class="back-button">Retour</a>
+</div>
+
+{% endblock %}
