@@ -168,7 +168,12 @@ class TournamentController extends AbstractController
             $teams[] = $register->getIdTeam();
         }
 
-        $matches = $matchsRepository->findBy(['id_tournament' => $tournament]);
+        $matches = $matchsRepository->findBy(['id_tournament' => $tournament], ['phase' => 'ASC']);
+        $matchesByPhase = [];
+
+        foreach ($matches as $match) {
+            $matchesByPhase[$match->getPhase()][] = $match;
+        }
 
         if ($request->isMethod('POST')) {
             foreach ($matches as $match) {
@@ -191,15 +196,14 @@ class TournamentController extends AbstractController
 
             $entityManager->flush();
             $this->addFlash('success', 'Les matchs ont été mis à jour.');
-            return $this->redirectToRoute('app_tournament_manage_matches', ['id' => $tournament->getId()]);
+            return $this->redirectToRoute('app_display', ['id' => $tournament->getId()]);
         }
 
         return $this->render('tournament/manage_matches.html.twig', [
             'tournament' => $tournament,
-            'matches' => $matches,
+            'matchesByPhase' => $matchesByPhase,
             'teams' => $teams,
         ]);
     }
-
 
 }

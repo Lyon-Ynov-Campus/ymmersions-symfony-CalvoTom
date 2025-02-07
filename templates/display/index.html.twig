@@ -85,12 +85,7 @@
                         <h4 class="tournament-date">{{ tournament.getDateStart()|date('d/m/Y') }}</h4>
                         <a href="{{ path('app_tournament_view', { 'id': tournament.id }) }}" class="view-button">view</a>
                         {% if is_granted('ROLE_ADMIN') %}
-                            {% set currentDate = "now" | date("Y-m-d") %}
-                            {% if currentDate < tournament.dateStart %}
-                                <a href="{{ path('app_tournament_manage_matches', {id: tournament.id}) }}" class="view-button">edit match</a>
-                            {% else %}
-                                <a href="{{ path('app_tournament_edit', { 'id': tournament.id }) }}" class="view-button">edit</a>
-                            {% endif %}
+                            <a href="{{ path('app_tournament_edit', { 'id': tournament.id }) }}" class="view-button">edit</a>
                         {% endif %}
                     </div>
                 {% else %}

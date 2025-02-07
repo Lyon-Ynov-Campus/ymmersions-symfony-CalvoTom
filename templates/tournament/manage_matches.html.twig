@@ -2,6 +2,14 @@
 
 {% block stylesheets %}
 <style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
     .match-management-container {
         padding: 20px;
         margin: 20px auto;
@@ -18,93 +26,109 @@
         text-align: center;
     }
 
+    h2 {
+        font-size: 20px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-bottom: 20px;
     }
 
     th, td {
         padding: 10px;
-        text-align: center;
+        text-align: left;
         border: 1px solid #ddd;
     }
 
     th {
-        background-color: #000;
-        color: #fff;
+        background-color: #000000;
+        color: #ffffff;
     }
 
-    select, input {
-        padding: 5px;
-        width: 100%;
-        font-size: 14px;
-    }
-
-    .btn {
-        background-color: #000;
-        color: #fff;
-        border: none;
+    select, input[type="number"] {
+        width: calc(100% - 20px); /* Réduit la largeur pour compenser le padding */
         padding: 10px;
+        border: 1px solid #ddd;
         border-radius: 5px;
-        cursor: pointer;
-        margin-top: 15px;
-        width: 100%;
+        font-size: 16px;
     }
 
-    .btn:hover {
-        background-color: #444;
+    button {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        width: 100%; /* Prend toute la largeur */
+        margin-top: 20px;
+    }
+
+    button:hover {
+        background-color: #444444;
     }
 </style>
 {% endblock %}
 
 {% block body %}
 {% include 'header.html.twig' %}
+
 <div class="match-management-container">
     <h1>Gestion des matchs du tournoi: {{ tournament.name }}</h1>
 
     <form method="post">
-        <table>
-            <thead>
-                <tr>
-                    <th>Équipe 1</th>
-                    <th>Score</th>
-                    <th>Équipe 2</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for match in matches %}
-                <tr>
-                    <td>
-                        <select name="match_{{ match.id }}_team1">
-                            <option value="">Sélectionner une équipe</option>
-                            {% for team in teams %}
-                                <option value="{{ team.id }}" {% if match.idTeam1 and match.idTeam1.id == team.id %}selected{% endif %}>
-                                    {{ team.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" name="match_{{ match.id }}_score1" value="{{ match.scoreTeam1 }}" min="0">
-                        -
-                        <input type="number" name="match_{{ match.id }}_score2" value="{{ match.scoreTeam2 }}" min="0">
-                    </td>
-                    <td>
-                        <select name="match_{{ match.id }}_team2">
-                            <option value="">Sélectionner une équipe</option>
-                            {% for team in teams %}
-                                <option value="{{ team.id }}" {% if match.idTeam2 and match.idTeam2.id == team.id %}selected{% endif %}>
-                                    {{ team.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% for phase, matches in matchesByPhase %}
+            <h2>Phase {{ phase|capitalize }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Équipe 1</th>
+                        <th>Score</th>
+                        <th>Équipe 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in matches %}
+                    <tr>
+                        <td>
+                            <select name="match_{{ match.id }}_team1">
+                                <option value="">Sélectionner une équipe</option>
+                                {% for team in teams %}
+                                    <option value="{{ team.id }}" {% if match.idTeam1 and match.idTeam1.id == team.id %}selected{% endif %}>
+                                        {{ team.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="match_{{ match.id }}_score1" value="{{ match.scoreTeam1 }}" min="0">
+                            -
+                            <input type="number" name="match_{{ match.id }}_score2" value="{{ match.scoreTeam2 }}" min="0">
+                        </td>
+                        <td>
+                            <select name="match_{{ match.id }}_team2">
+                                <option value="">Sélectionner une équipe</option>
+                                {% for team in teams %}
+                                    <option value="{{ team.id }}" {% if match.idTeam2 and match.idTeam2.id == team.id %}selected{% endif %}>
+                                        {{ team.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
         <button type="submit" class="btn">Mettre à jour les matchs</button>
     </form>
 </div>
+
 {% endblock %}

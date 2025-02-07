@@ -116,6 +116,9 @@
                     </tbody>
                 </table>
             {% endfor %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_tournament_manage_matches', {id: tournament.id}) }}" class="btn btn-primary">Manage</a>
+            {% endif %}
         {% else %}
             <h3>Équipes inscrites</h3>
             {% if teams is not empty %}
