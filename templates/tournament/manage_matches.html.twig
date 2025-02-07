@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<style>
+    .match-management-container {
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 800px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #000;
+        color: #fff;
+    }
+
+    select, input {
+        padding: 5px;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .btn {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        width: 100%;
+    }
+
+    .btn:hover {
+        background-color: #444;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'header.html.twig' %}
+<div class="match-management-container">
+    <h1>Gestion des matchs du tournoi: {{ tournament.name }}</h1>
+
+    <form method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Équipe 1</th>
+                    <th>Score</th>
+                    <th>Équipe 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in matches %}
+                <tr>
+                    <td>
+                        <select name="match_{{ match.id }}_team1">
+                            <option value="">Sélectionner une équipe</option>
+                            {% for team in teams %}
+                                <option value="{{ team.id }}" {% if match.idTeam1 and match.idTeam1.id == team.id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="match_{{ match.id }}_score1" value="{{ match.scoreTeam1 }}" min="0">
+                        -
+                        <input type="number" name="match_{{ match.id }}_score2" value="{{ match.scoreTeam2 }}" min="0">
+                    </td>
+                    <td>
+                        <select name="match_{{ match.id }}_team2">
+                            <option value="">Sélectionner une équipe</option>
+                            {% for team in teams %}
+                                <option value="{{ team.id }}" {% if match.idTeam2 and match.idTeam2.id == team.id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn">Mettre à jour les matchs</button>
+    </form>
+</div>
+{% endblock %}

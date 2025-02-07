@@ -141,4 +141,65 @@ class TournamentController extends AbstractController
         ]);
     }
 
+    #[Route('/tournament/{id}/manage-matches', name: 'app_tournament_manage_matches')]
+    public function manageMatches(
+        int $id,
+        TOURNAMENTRepository $tournamentRepository,
+        MATCHSRepository $matchsRepository,
+        TEAMRepository $teamRepository,
+        Request $request,
+        REGISTERRepository $registerRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $tournament = $tournamentRepository->find($id);
+        if (!$tournament) {
+            throw $this->createNotFoundException('Tournoi non trouvé');
+        }
+
+        $currentDate = new \DateTime();
+        if ($currentDate < $tournament->getDateStart()) {
+            $this->addFlash('error', 'Le tournoi n\'a pas encore commencé.');
+            return $this->redirectToRoute('app_display');
+        }
+
+        $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
+        $teams = [];
+        foreach ($registers as $register) {
+            $teams[] = $register->getIdTeam();
+        }
+
+        $matches = $matchsRepository->findBy(['id_tournament' => $tournament]);
+
+        if ($request->isMethod('POST')) {
+            foreach ($matches as $match) {
+                $team1Id = $request->request->get('match_' . $match->getId() . '_team1');
+                $team2Id = $request->request->get('match_' . $match->getId() . '_team2');
+                $score1 = $request->request->get('match_' . $match->getId() . '_score1');
+                $score2 = $request->request->get('match_' . $match->getId() . '_score2');
+
+                $team1 = $teamRepository->find($team1Id);
+                $team2 = $teamRepository->find($team2Id);
+
+                if ($team1 && $team2) {
+                    $match->setIdTeam1($team1);
+                    $match->setIdTeam2($team2);
+                    $match->setScoreTeam1($score1);
+                    $match->setScoreTeam2($score2);
+                    $entityManager->persist($match);
+                }
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Les matchs ont été mis à jour.');
+            return $this->redirectToRoute('app_tournament_manage_matches', ['id' => $tournament->getId()]);
+        }
+
+        return $this->render('tournament/manage_matches.html.twig', [
+            'tournament' => $tournament,
+            'matches' => $matches,
+            'teams' => $teams,
+        ]);
+    }
+
+
 }
