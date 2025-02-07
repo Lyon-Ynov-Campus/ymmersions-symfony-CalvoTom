@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background-color: #ffffff !important;
+        color: #000000;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .landing-container {
+        padding: 40px;
+        margin: 20px auto;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center; 
+    }
+
+    h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .btn {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px; 
+    }
+
+    .btn:hover {
+        background-color: #444444;
+    }
+
+    .landing-image {
+        max-width: 50%;
+        height: auto; 
+        margin: 20px auto; 
+        display: block; 
+    }
+
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'header.html.twig' %}
+<div class="landing-container">
+    <h1>Bienvenue sur MVP</h1>
+    <p>Inscrivez-vous pour devenir l'unique Most Valuable Player !</p>
+    <img src="{{ asset('img/logo_white.jpg') }}" alt="Description de l'image" class="landing-image">
+    
+    <a href="{{ path('app_login') }}" class="btn">Login</a>
+    <a href="{{ path('app_register') }}" class="btn">Register</a>
+</div>
+{% endblock %}

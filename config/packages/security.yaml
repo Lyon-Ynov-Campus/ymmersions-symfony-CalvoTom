@@ -38,7 +38,15 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/tournament/create, roles: ROLE_ADMIN }
+        - { path: ^/tournament/\d+/edit, roles: ROLE_ADMIN }   
+        - { path: ^/tournament/\d+/manage-matches, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/profile/edit, roles: ROLE_USER }
+        - { path: ^/logout, roles: ROLE_USER }
+        - { path: ^/tournament/\d+/register, roles: ROLE_USER }   
+        - { path: ^/mytournament/\d+, roles: ROLE_USER }  
+        - { path: ^/mytournament, roles: ROLE_USER }
 
 when@test:
     security:
