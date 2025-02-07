@@ -11,6 +11,7 @@ use App\Entity\MATCHS;
 use App\Repository\REGISTERRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\TOURNAMENT;
+use App\Entity\TEAM;
 
 final class DisplayController extends AbstractController
 {
@@ -32,7 +33,6 @@ final class DisplayController extends AbstractController
         REGISTERRepository $registerRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        // Récupérer le tourno
         $tournament = $tournamentRepository->find($id);
         if (!$tournament) {
             throw $this->createNotFoundException('Tournament not found');
@@ -40,71 +40,48 @@ final class DisplayController extends AbstractController
 
         $currentDate = new \DateTime();
         
-        // Vérifier si le tournoi a commencé
         $hasStarted = $currentDate >= $tournament->getDateStart();
 
         if ($hasStarted) {
-            // Récupérer tous les matchs du tournoi
-            $matches = $matchsRepository->findBy(['id_tournament' => $id]);
-            if ($matches ){
-                $this->generateRoundMatches($tournament, $registerRepository, $entityManager);
-            }
-
-            // Déterminer le nombre d'équipes max pour calculer les phases
             $nbTeams = $tournament->getNbMaxTeam();
             $totalRounds = log($nbTeams, 2);
+            $currentRound = 1;
 
-            // Organiser les matchs par phase
-            $phases = [
-                "Final" => [],
-                "Demi-final" => [],
-                "Quart de finale" => [],
-                "Huitième de finale" => [],
-            ];
+            // Vérifier s'il y a déjà des matchs dans la base de données
+            $matchesByPhase = [];
+            $allMatches = $matchsRepository->findBy(['id_tournament' => $id]);
 
-            $remainingMatches = [
-                "Huitième de finale" => $nbTeams / 2,
-                "Quart de finale" => $nbTeams / 4,
-                "Demi-final" => $nbTeams / 8,
-                "Final" => 1
-            ];
+            // Si aucun match n'est trouvé, générer les matchs
+            if (empty($allMatches)) {
+                // Appeler la méthode pour générer les matchs
+                $this->generateRoundMatches($tournament, $registerRepository, $entityManager);
 
-            if ($nbTeams == 8) {
-                $remainingMatches["Huitième de finale"] = 0;
-                $remainingMatches["Quart de finale"] = 4;
-            } elseif ($nbTeams == 4) {
-                $remainingMatches["Huitième de finale"] = 0;
-                $remainingMatches["Quart de finale"] = 0;
-                $remainingMatches["Demi-final"] = 2;
-            } elseif ($nbTeams == 2) {
-                $remainingMatches["Huitième de finale"] = 0;
-                $remainingMatches["Quart de finale"] = 0;
-                $remainingMatches["Demi-final"] = 0;
-                $remainingMatches["Final"] = 1;
-            }
-
-            foreach ($matches as $match) {
-                if ($remainingMatches["Huitième de finale"] > 0) {
-                    $phases["Huitième de finale"][] = $match;
-                    $remainingMatches["Huitième de finale"]--;
-                } elseif ($remainingMatches["Quart de finale"] > 0) {
-                    $phases["Quart de finale"][] = $match;
-                    $remainingMatches["Quart de finale"]--;
-                } elseif ($remainingMatches["Demi-final"] > 0) {
-                    $phases["Demi-final"][] = $match;
-                    $remainingMatches["Demi-final"]--;
-                } elseif ($remainingMatches["Final"] > 0) {
-                    $phases["Final"][] = $match;
-                    $remainingMatches["Final"]--;
+                // Après génération des matchs, récupérer les matchs par phase à nouveau
+                $matchesByPhase = $this->getMatchesByPhase($tournament, $matchsRepository);
+            } else {
+                // Sinon, récupérer les matchs par phase
+                for ($round = 1; $round <= $totalRounds; $round++) {
+                    $matchesInCurrentRound = $matchsRepository->findBy([
+                        'id_tournament' => $id,
+                        'phase' => $round
+                    ]);
+                    if (!empty($matchesInCurrentRound)) {
+                        $matchesByPhase[$round] = [];
+            
+                        foreach ($matchesInCurrentRound as $match) {
+                            $matchesByPhase[$round][] = $match->getId(); 
+                        }
+                    }
                 }
             }
 
             return $this->render('display/tournament_view.html.twig', [
                 'tournament' => $tournament,
-                'phases' => $phases
+                'matchesByPhase' => $matchesByPhase,
+                'matchsRepository' => $matchsRepository
             ]);
+            
         } else {
-            // Le tournoi n'a pas encore commencé, afficher les équipes inscrites
             $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
             $teams = [];
 
@@ -120,35 +97,72 @@ final class DisplayController extends AbstractController
         }
     }
 
+    // Cette fonction permet de récupérer les matchs par phase
+    private function getMatchesByPhase(TOURNAMENT $tournament, MATCHSRepository $matchsRepository): array
+    {
+        $matchesByPhase = [];
+        $totalRounds = log($tournament->getNbMaxTeam(), 2); // Calculer le nombre de phases
+
+        for ($round = 1; $round <= $totalRounds; $round++) {
+            $matchesInCurrentRound = $matchsRepository->findBy([
+                'id_tournament' => $tournament,
+                'phase' => $round
+            ]);
+            if (!empty($matchesInCurrentRound)) {
+                $matchesByPhase[$round] = [];
+
+                foreach ($matchesInCurrentRound as $match) {
+                    $matchesByPhase[$round][] = $match->getId();
+                }
+            }
+        }
+
+        return $matchesByPhase;
+    }
+
     public function generateRoundMatches(TOURNAMENT $tournament, REGISTERRepository $registerRepository, EntityManagerInterface $entityManager): void
     {
         $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
         $teams = [];
-
+    
+        $undefinedTeam = $entityManager->getRepository(Team::class)->findOneBy(['name' => 'undefined']);
+    
+        if (!$undefinedTeam) {
+            throw $this->createNotFoundException('L\'équipe avec le nom "undefined" n\'a pas été trouvée.');
+        }
         foreach ($registers as $register) {
             $teams[] = $register->getIdTeam();
         }
-
         if (count($teams) % 2 !== 0) {
             throw $this->createNotFoundException('Le nombre d\'équipes doit être pair pour générer les matchs.');
         }
-
+    
         $roundMatches = [];
-
-        for ($i = 0; $i < count($teams); $i += 2) {
-            $team1 = $teams[$i];
-            $team2 = $teams[$i + 1];
-
-            $match = new MATCHS();
-            $match->setIdTournament($tournament);
-            $match->setIdTeam1($team1);
-            $match->setIdTeam2($team2);
-            $match->setDate(new \DateTime());
-            
-            $entityManager->persist($match);
-            $roundMatches[] = $match;
+        $phase = 1; // Phase initiale
+        $totalTeams = count($teams); // Nombre d'équipes initial
+    
+        while ($totalTeams > 1) {
+            $numMatches = $totalTeams / 2;
+    
+            for ($i = 0; $i < $numMatches; $i++) {
+                $match = new MATCHS();
+                $match->setIdTournament($tournament);
+                
+                $match->setIdTeam1($undefinedTeam); // Assigner l'équipe "undefined"
+                $match->setIdTeam2($undefinedTeam); // Assigner également l'équipe "undefined" pour l'autre équipe
+                $match->setDate(new \DateTime()); // Date du match, ici actuelle
+                $match->setScoreTeam1(0);
+                $match->setScoreTeam2(0);
+    
+                $match->setPhase($phase);
+                $entityManager->persist($match);
+                $roundMatches[$phase][] = $match;
+            }
+    
+            $totalTeams = $numMatches; // Réduire le nombre d'équipes en doublant le nombre de matchs
+            $phase++; // Incrémenter la phase
         }
-
+    
         $entityManager->flush();
     }
 

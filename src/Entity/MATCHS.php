@@ -35,6 +35,10 @@ class MATCHS
     #[ORM\Column(nullable: true)]
     private ?int $score_team_2 = null;
 
+    // Nouveau champ pour la phase du match
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $phase = 1; // Par défaut, nous attribuons la phase 1
+
     public function getId(): ?int
     {
         return $this->id;
@@ -108,6 +112,19 @@ class MATCHS
     public function setScoreTeam2(?int $score_team_2): static
     {
         $this->score_team_2 = $score_team_2;
+
+        return $this;
+    }
+
+    // Getter et setter pour la phase
+    public function getPhase(): int
+    {
+        return $this->phase;
+    }
+
+    public function setPhase(int $phase): static
+    {
+        $this->phase = $phase;
 
         return $this;
     }
