@@ -88,7 +88,7 @@
 
         {# Vérifier si la date du tournoi est dépassée pour afficher les matchs #}
         {% set currentDate = "now"|date('Y-m-d') %}
-        {% set tournamentDate = tournament.getDateEndRegister()|date('Y-m-d') %}
+        {% set tournamentDate = tournament.getDateStart()|date('Y-m-d') %}
 
         {% if currentDate >= tournamentDate %}
             {# Le tournoi a commencé, afficher les matchs #}

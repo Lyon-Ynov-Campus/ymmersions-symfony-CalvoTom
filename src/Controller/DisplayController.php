@@ -7,7 +7,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\TOURNAMENTRepository;
 use App\Repository\MATCHSRepository;
+use App\Entity\MATCHS;
 use App\Repository\REGISTERRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\TOURNAMENT;
 
 final class DisplayController extends AbstractController
@@ -27,9 +29,10 @@ final class DisplayController extends AbstractController
         int $id, 
         TOURNAMENTRepository $tournamentRepository, 
         MATCHSRepository $matchsRepository, 
-        REGISTERRepository $registerRepository
+        REGISTERRepository $registerRepository,
+        EntityManagerInterface $entityManager
     ): Response {
-        // Récupérer le tournoi
+        // Récupérer le tourno
         $tournament = $tournamentRepository->find($id);
         if (!$tournament) {
             throw $this->createNotFoundException('Tournament not found');
@@ -43,6 +46,9 @@ final class DisplayController extends AbstractController
         if ($hasStarted) {
             // Récupérer tous les matchs du tournoi
             $matches = $matchsRepository->findBy(['id_tournament' => $id]);
+            if ($matches ){
+                $this->generateRoundMatches($tournament, $registerRepository, $entityManager);
+            }
 
             // Déterminer le nombre d'équipes max pour calculer les phases
             $nbTeams = $tournament->getNbMaxTeam();
@@ -112,6 +118,38 @@ final class DisplayController extends AbstractController
                 'hasStarted' => $hasStarted
             ]);
         }
+    }
+
+    public function generateRoundMatches(TOURNAMENT $tournament, REGISTERRepository $registerRepository, EntityManagerInterface $entityManager): void
+    {
+        $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
+        $teams = [];
+
+        foreach ($registers as $register) {
+            $teams[] = $register->getIdTeam();
+        }
+
+        if (count($teams) % 2 !== 0) {
+            throw $this->createNotFoundException('Le nombre d\'équipes doit être pair pour générer les matchs.');
+        }
+
+        $roundMatches = [];
+
+        for ($i = 0; $i < count($teams); $i += 2) {
+            $team1 = $teams[$i];
+            $team2 = $teams[$i + 1];
+
+            $match = new MATCHS();
+            $match->setIdTournament($tournament);
+            $match->setIdTeam1($team1);
+            $match->setIdTeam2($team2);
+            $match->setDate(new \DateTime());
+            
+            $entityManager->persist($match);
+            $roundMatches[] = $match;
+        }
+
+        $entityManager->flush();
     }
 
 }
