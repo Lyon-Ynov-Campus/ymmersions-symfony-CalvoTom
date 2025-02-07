@@ -4,13 +4,11 @@
         <meta charset="UTF-8">
         <title>{% block title %}Liste des Tournois{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
-
+        {% block stylesheets %}{% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-    <head>
+    </head>
     <body>
         {% block body %}
         <style>
@@ -20,6 +18,18 @@
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 20px;
+            }
+
+            .filter-container {
+                margin-bottom: 20px;
+            }
+
+            .filter-select {
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+                margin-left: 4%;
             }
 
             .tournament-wrapper {
@@ -41,15 +51,10 @@
                 margin: 0 0 10px;
             }
 
-            h1 {
-                font-size: 24px;
-                margin-bottom: 15px;
-                text-align: center;
-            }
-
-            h2 {
-                font-size: 24px;
-                margin-bottom: 15px;
+            .tournament-date {
+                font-size: 18px;
+                color: #888888;
+                margin-top: 5px;
             }
 
             .view-button {
@@ -67,10 +72,8 @@
                 background-color: #444444;
             }
 
-            .tournament-date {
-                font-size: 18px; /* Taille réduite */
-                color: #888888; /* Couleur grisée */
-                margin-top: 5px; /* Un petit espace entre le titre et la date */
+            h1{
+                text-align: center;
             }
         </style>
 
@@ -78,9 +81,23 @@
         <div class="example-wrapper">
             <h1>Liste des Tournois 🏆</h1>
 
-            <ul>
+            <!-- FILTRE -->
+            <div class="filter-container">
+                <select id="filter" class="filter-select">
+                    <option value="all">Tous</option>
+                    <option value="ongoing">En cours</option>
+                    <option value="finished">Terminés</option>
+                </select>
+            </div>
+
+            <ul id="tournament-list">
                 {% for tournament in tournaments %}
-                    <div class="tournament-wrapper">
+                    {% set now = "now"|date("Y-m-d") %}
+                    {% set endRegisterDate = tournament.getDateEndRegister()|date("Y-m-d") %}
+                    {% set startDate = tournament.getDateStart()|date("Y-m-d") %}
+
+                    <div class="tournament-wrapper" 
+                        data-status="{% if now <= endRegisterDate %}ongoing{% elseif now >= startDate %}finished{% else %}all{% endif %}">
                         <h2 class="tournament-title">{{ tournament.name }}</h2>
                         <h4 class="tournament-date">{{ tournament.getDateStart()|date('d/m/Y') }}</h4>
                         <a href="{{ path('app_tournament_view', { 'id': tournament.id }) }}" class="view-button">view</a>
@@ -93,6 +110,22 @@
                 {% endfor %}
             </ul>
         </div>
+
+        <script>
+            document.getElementById('filter').addEventListener('change', function() {
+                let selectedFilter = this.value;
+                let tournaments = document.querySelectorAll('.tournament-wrapper');
+
+                tournaments.forEach(tournament => {
+                    if (selectedFilter === 'all' || tournament.getAttribute('data-status') === selectedFilter) {
+                        tournament.style.display = 'block';
+                    } else {
+                        tournament.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+
         {% endblock %}
-    <body>
+    </body>
 </html>
