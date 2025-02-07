@@ -92,6 +92,12 @@ class TournamentController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
 
+        // Vérifier si l'utilisateur est déjà inscrit au tournoi
+        $existingRegistration = $registerRepository->findOneBy([
+            'id_user' => $this->getUser(),
+            'id_tournament' => $tournament,
+        ]);
+
         // Récupération des équipes déjà inscrites au tournoi
         $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
         $teams = [];
@@ -106,6 +112,11 @@ class TournamentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($existingRegistration) {
+                $this->addFlash('error', 'Vous êtes déjà inscrit à ce tournoi.');
+                return $this->redirectToRoute('app_tournament_register', ['id' => $tournament->getId()]);
+            }
+
             $team = $form->get('team')->getData();
             if ($team) {
                 $newTeam = $team;
@@ -138,6 +149,7 @@ class TournamentController extends AbstractController
         return $this->render('tournament/register.html.twig', [
             'form' => $form->createView(),
             'tournament' => $tournament,
+            'alreadyRegistered' => $existingRegistration !== null,
         ]);
     }
 
