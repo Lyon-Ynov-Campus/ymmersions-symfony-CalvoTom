@@ -47,19 +47,19 @@ final class DisplayController extends AbstractController
             $totalRounds = log($nbTeams, 2);
             $currentRound = 1;
 
-            // Vérifier s'il y a déjà des matchs dans la base de données
+            
             $matchesByPhase = [];
             $allMatches = $matchsRepository->findBy(['id_tournament' => $id]);
 
-            // Si aucun match n'est trouvé, générer les matchs
+            
             if (empty($allMatches)) {
-                // Appeler la méthode pour générer les matchs
+                
                 $this->generateRoundMatches($tournament, $registerRepository, $entityManager);
 
-                // Après génération des matchs, récupérer les matchs par phase à nouveau
+                
                 $matchesByPhase = $this->getMatchesByPhase($tournament, $matchsRepository);
             } else {
-                // Sinon, récupérer les matchs par phase
+                
                 for ($round = 1; $round <= $totalRounds; $round++) {
                     $matchesInCurrentRound = $matchsRepository->findBy([
                         'id_tournament' => $id,
@@ -97,11 +97,11 @@ final class DisplayController extends AbstractController
         }
     }
 
-    // Cette fonction permet de récupérer les matchs par phase
+    
     private function getMatchesByPhase(TOURNAMENT $tournament, MATCHSRepository $matchsRepository): array
     {
         $matchesByPhase = [];
-        $totalRounds = log($tournament->getNbMaxTeam(), 2); // Calculer le nombre de phases
+        $totalRounds = log($tournament->getNbMaxTeam(), 2); 
 
         for ($round = 1; $round <= $totalRounds; $round++) {
             $matchesInCurrentRound = $matchsRepository->findBy([
@@ -138,8 +138,8 @@ final class DisplayController extends AbstractController
         }
     
         $roundMatches = [];
-        $phase = 1; // Phase initiale
-        $totalTeams = count($teams); // Nombre d'équipes initial
+        $phase = 1; 
+        $totalTeams = count($teams); 
     
         while ($totalTeams > 1) {
             $numMatches = $totalTeams / 2;
@@ -148,9 +148,9 @@ final class DisplayController extends AbstractController
                 $match = new MATCHS();
                 $match->setIdTournament($tournament);
                 
-                $match->setIdTeam1($undefinedTeam); // Assigner l'équipe "undefined"
-                $match->setIdTeam2($undefinedTeam); // Assigner également l'équipe "undefined" pour l'autre équipe
-                $match->setDate(new \DateTime()); // Date du match, ici actuelle
+                $match->setIdTeam1($undefinedTeam); 
+                $match->setIdTeam2($undefinedTeam); 
+                $match->setDate(new \DateTime()); 
                 $match->setScoreTeam1(0);
                 $match->setScoreTeam2(0);
     
@@ -159,8 +159,8 @@ final class DisplayController extends AbstractController
                 $roundMatches[$phase][] = $match;
             }
     
-            $totalTeams = $numMatches; // Réduire le nombre d'équipes en doublant le nombre de matchs
-            $phase++; // Incrémenter la phase
+            $totalTeams = $numMatches; 
+            $phase++; 
         }
     
         $entityManager->flush();

@@ -19,12 +19,12 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class) // Ajout du champ name
-            ->add('email', TextType::class) // Ajout du champ email
+            ->add('name', TextType::class) 
+            ->add('email', TextType::class) 
             ->add('dateBirth', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Date of Birth'
-            ]) // Ajout du champ dateBirth
+            ]) 
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [

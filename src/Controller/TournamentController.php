@@ -92,13 +92,13 @@ class TournamentController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
 
-        // Vérifier si l'utilisateur est déjà inscrit au tournoi
+        
         $existingRegistration = $registerRepository->findOneBy([
             'id_user' => $this->getUser(),
             'id_tournament' => $tournament,
         ]);
 
-        // Récupération des équipes déjà inscrites au tournoi
+        
         $registers = $registerRepository->findBy(['id_tournament' => $tournament]);
         $teams = [];
         foreach ($registers as $register) {
@@ -124,7 +124,7 @@ class TournamentController extends AbstractController
                 $newTeam->setName($form->get('new_team_name')->getData());
             }
 
-            // Vérifier si l'équipe a déjà atteint le nombre maximum de joueurs
+            
             $teamRegistrations = $registerRepository->findBy(['id_team' => $newTeam]);
             $maxPlayersPerTeam = $tournament->getNbMaxByTeam();
 

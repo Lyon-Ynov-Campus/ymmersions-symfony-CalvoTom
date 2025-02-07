@@ -29,7 +29,7 @@ class UserFixture extends Fixture
         $user->setRoles(["ROLE_ADMIN", "ROLE_USER"]);
         $user->setDateBirth(new \DateTime('2025-02-06'));
 
-        // Hachage du mot de passe avec le password hasher
+        
         $hashedPassword = $this->passwordHasher->hashPassword($user, 'admin');
         $user->setPassword($hashedPassword);
 
@@ -42,7 +42,7 @@ class UserFixture extends Fixture
 
         $faker = Factory::create();
         
-        // Créer les utilisateurs (joueurs)
+        
         $users = [];
         for ($i = 1; $i <= 16; $i++) {
             $user = new USER();
@@ -52,15 +52,14 @@ class UserFixture extends Fixture
             $user->setRoles(['ROLE_USER']);
             $user->setIsVerified(true);
 
-            // Hachage du mot de passe avec le password hasher
+            
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
             $user->setPassword($hashedPassword);
 
             $manager->persist($user);
             $users[] = $user;
         }
-
-        // Créer le tournoi unique : Grand Tournament
+        
         $tournament = new TOURNAMENT();
         $tournament->setName("Grand Tournament");
         $tournament->setDateStartRegister(new \DateTime('2025-01-01'));
@@ -70,7 +69,7 @@ class UserFixture extends Fixture
         $tournament->setNbMaxByTeam(2);
         $manager->persist($tournament);
 
-        // Créer les équipes
+        
         $teams = [];
         for ($i = 1; $i <= 8; $i++) {
             $team = new TEAM();
@@ -78,21 +77,21 @@ class UserFixture extends Fixture
             $manager->persist($team);
             $teams[] = $team;
 
-            // Associer des joueurs à l'équipe (chaque équipe a 2 joueurs)
+            
             $register1 = new REGISTER();
             $register1->setIdTeam($team);
             $register1->setIdUser($users[($i - 1) * 2]);
-            $register1->setIdTournament($tournament); // Associer au tournoi unique
+            $register1->setIdTournament($tournament); 
             $manager->persist($register1);
 
             $register2 = new REGISTER();
             $register2->setIdTeam($team);
             $register2->setIdUser($users[($i - 1) * 2 + 1]);
-            $register2->setIdTournament($tournament); // Associer au tournoi unique
+            $register2->setIdTournament($tournament); 
             $manager->persist($register2);
         }
 
-        // Créer les matchs de la phase 1 (Huitième de finale)
+        
         $matches = [];
         for ($i = 0; $i < 4; $i++) {
             $match = new MATCHS();
@@ -100,19 +99,19 @@ class UserFixture extends Fixture
             $match->setIdTeam1($teams[$i * 2]);
             $match->setIdTeam2($teams[$i * 2 + 1]);
             $match->setDate(new \DateTime('2025-02-01'));
-            $match->setScoreTeam1(rand(0, 5)); // Score aléatoire pour l'équipe 1
-            $match->setScoreTeam2(rand(0, 5)); // Score aléatoire pour l'équipe 2
+            $match->setScoreTeam1(rand(0, 5)); 
+            $match->setScoreTeam2(rand(0, 5)); 
             $match->setPhase(1);
             $manager->persist($match);
             $matches[] = $match;
         }
 
-        // Créer les matchs de la phase 2 (Quart de finale)
+        
         $quartFinalMatches = [];
         for ($i = 0; $i < 2; $i++) {
             $match = new MATCHS();
             $match->setIdTournament($tournament);
-            $match->setIdTeam1($teams[$i * 2]); // Choisir les équipes gagnantes
+            $match->setIdTeam1($teams[$i * 2]); 
             $match->setIdTeam2($teams[$i * 2 + 1]);
             $match->setDate(new \DateTime('2025-02-02'));
             $match->setScoreTeam1(rand(0, 5));
@@ -122,7 +121,7 @@ class UserFixture extends Fixture
             $quartFinalMatches[] = $match;
         }
 
-        // Créer les matchs de la phase 3 (Demi-finales)
+        
         $semiFinalMatches = [];
         for ($i = 0; $i < 1; $i++) {
             $match = new MATCHS();

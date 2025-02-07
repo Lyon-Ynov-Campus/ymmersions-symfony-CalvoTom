@@ -15,7 +15,7 @@ class TournamentRegistrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            // Sélectionner une équipe existante
+            
             ->add('team', ChoiceType::class, [
                 'choices' => $options['teams'],
                 'choice_label' => function ($team) {
@@ -24,7 +24,7 @@ class TournamentRegistrationType extends AbstractType
                 'placeholder' => 'Choisir une équipe existante',
                 'required' => false,
             ])
-            // Créer une nouvelle équipe
+            
             ->add('new_team_name', TextType::class, [
                 'label' => 'Nom de la nouvelle équipe',
                 'required' => false,
